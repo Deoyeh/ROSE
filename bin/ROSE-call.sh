@@ -3,6 +3,7 @@
 # Rose Caller to detect both Enhancers and Super-Enhancers
 #
 # Version 1 11/16/2019
+# Version 2 03/22/2020
 
 ##############################################################
 # ##### Please replace PATHTO with your own directory ###### #
