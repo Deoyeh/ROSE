@@ -3,11 +3,18 @@
 # Rose Caller to detect both Enhancers and Super-Enhancers
 #
 # Version 1 11/16/2019
-# Updated: 1/9/2020
 
-if [ $# -lt 7 ]; then
+##############################################################
+# ##### Please replace PATHTO with your own directory ###### #
+##############################################################
+PATHTO=/projects/academic/mjbuck/Collaborators/Sinha_Core_File_Deposit/Akinsola/Software/ROSE
+PYTHONPATH=$PATHTO/lib
+export PYTHONPATH
+export PATH=$PATH:$PATHTO/bin
+
+if [ $# -lt 5 ]; then
   echo ""
-  echo 1>&2 Usage: $0 ["GTF file"] ["BAM file"] ["OutputDir"] ["feature type"] ["species"] ["bed fileA"] ["bed fileB"]
+  echo 1>&2 Usage: $0 ["narrowPeak/GFF_file"] ["INPUT BAM file"] ["TEST BAM file"] ["OutputDir"] ["species"]
   echo ""
   exit 1
 fi
@@ -15,77 +22,70 @@ fi
 #================================================================================
 #Parameters for running
 
-# GTF files
-GTFFILE=$1
 
-# BAM file
-BAMFILE=$2
+# GTF files
+GFF_FILE=$1
+
+# Input BAM file
+INPUT_BAMFILE=$2
+
+# Test BAM file
+TEST_BAMFILE=$3
 
 # Output Directory
-OUTPUTDIR=$3
+OUTPUTDIR=$4
 OUTPUTDIR=${OUTPUTDIR:=ROSE_out}
-
-# Feature type
-FEATURE=$4
-FEATURE=${FEATURE:=gene}
 
 # Species
 SPECIES=$5
-SPECIES=${SPECIES:=hg_19}
 
-# Bed File A
-FILEA=$6
 
-# Bed File B
-FILEB=$7
 
 # Transcription Start Size Window
-#TSS=
 TSS=${TSS:=2000}
 
 # Maximum linking distance for stitching
-#STITCH=
 STITCH=${STITCH:=12500}
+
+
+#Permanent fix to age-long narrowPeak to GFF scare!
+
+if [ $(echo $GFF_FILE | cut -d "." -f 2) = "narrowPeak" ]; then
+  awk '{OFS="\t"; print $1, $4, " ", $2, $3, " ","."," ", $4}' $GFF_FILE > ${GFF_FILE%narrowPeak}gff
+  GFF_FILE=${GFF_FILE%narrowPeak}gff
+
+else
+  GFF_FILE=$GFF_FILE
+ 
+fi
+
+
 
 
 echo "#############################################"
 echo "######             ROSE v1             ######"
 echo "#############################################"
 
-echo "Input Bed File A: $FILEA"
-echo "Input Bed File B: $FILEB"
-echo "BAM file: $BAMFILE"
+echo "Input file: $INPUT_BAMFILE"
+echo "Test file: $TEST_BAMFILE"
 echo "Output directory: $OUTPUTDIR"
 echo "Species: $SPECIES"
-echo "Feature type: $FEATURE"
-#================================================================================
-# 
-# GENERATING UCSC REFSEQ FILE
+echo "Max. Stitch Distance: ${STITCH}kb"
+echo "TSS buffer: ${TSS}kb"
+echo "GFF file: $GFF_FILE"
+#===============================================================================
+
+
+
+
+# Generating UCSC RefSeq GFF File
 #
 mkdir -p annotation
-echo -e "#bin\tname\tchrom\tstrand\ttxStart\ttxEnd\tcdsStart\tcdsEnd\tX\tX\tX\t\tX\tname2" > annotation/$SPECIES"_refseq.ucsc"
-
-if [[ $FEATURE == "gene" ]]; then
-awk -F'[\t ]' '{
-  if($3=="gene")
-    print "0\t" $14 "\tchr" $1 "\t" $7 "\t" $4 "\t" $5 "\t" $4 "\t" $5 "\t.\t.\t.\t.\t" $18}' $GTFFILE | sed s/\"//g >> annotation/$SPECIES"_refseq.ucsc"
-
-elif [[ $FEATURE == "transcript" ]]; then
-awk -F'[\t ]' '{
-  if($3=="transcript")
-    print "0\t" $14 "\tchr" $1 "\t" $7 "\t" $4 "\t" $5 "\t" $4 "\t" $5 "\t.\t.\t.\t.\t" $18}' $GTFFILE | sed s/\"//g >> annotation/$SPECIES"_refseq.ucsc"
-fi
-echo "Annotation file: "$SPECIES"_refseq.ucsc"
-
-#
-# GENERATING MERGE BED FILES
-#
-cat $FILEA $FILEB | sort -k1,1 -k2,2n | mergeBed -i - | awk -F\\t '{print $1 "\t" NR "\t\t" $2 "\t" $3 "\t\t.\t\t" NR}' > unionpeaks.gff
-echo "Merge Bed file: unionpeaks.gff"
-echo
+rsync $PATHTO/annotations/${SPECIES,,}"_refseq.ucsc" ./annotation/
 
 #
 # ROSE CALLER
 #
-ROSE_main.py -s $STITCH -t $TSS -g $SPECIES -i unionpeaks.gff -r $BAMFILE -o $OUTPUTDIR
+ROSE_main.py -s $STITCH -t $TSS -g $SPECIES -i $GFF_FILE -r $TEST_BAMFILE -c $INPUT_BAMFILE -o $OUTPUTDIR
+
 echo "Done!"
