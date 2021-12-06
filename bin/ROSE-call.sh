@@ -9,7 +9,7 @@
 ##############################################################
 # ##### Please replace PATHTO with your own directory ###### #
 ##############################################################
-PATHTO=/projects/academic/mjbuck/Collaborators/Sinha_Core_File_Deposit/Akinsola/Software/ROSE
+PATHTO=PATH/to/ROSE
 PYTHONPATH=$PATHTO/lib
 export PYTHONPATH
 export PATH=$PATH:$PATHTO/bin
