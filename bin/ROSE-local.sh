@@ -1,14 +1,14 @@
 #!/bin/bash
-#
+# 
 # Rose Caller to detect both Enhancers and Super-Enhancers
 #
 # Version 1 11/16/2019
-# Version 1.2 
+# Version 1.2 3/29/2020 Modified from stjude/ROSE depository to fit python 2
 
 ##############################################################
 # ##### Please replace PATHTO with your own directory ###### #
 ##############################################################
-PATHTO=/projects/academic/mjbuck/Collaborators/Sinha_Core_File_Deposit/Akinsola/Software/ROSE
+PATHTO=Path/to/ROSE
 PYTHONPATH=$PATHTO/lib
 export PYTHONPATH
 export PATH=$PATH:$PATHTO/bin
