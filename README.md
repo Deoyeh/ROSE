@@ -10,7 +10,7 @@ CLONED using SOURCETREE from: https://bitbucket.org/young_computation/rose/src/m
 
 	- Option 1: To run the program locally and independent of software location by calling ROSE-local.sh
 		NB: First open ROSE-local.sh and modify PATHTO with the PATH ROSE is installed in.
-		> ROSE-local.sh ["GTF file"] ["BAM file"] ["OutputDir"] ["feature type"] ["species"] ["bed fileA"] ["bed fileB"]
+		> ROSE-local.sh ["NarrowPeak/GFF_File"] ["Input BAM file"] ["Test BAM file"] ["OutputDir"] ["species"]
 
 	- Option 2: Add ROSE to user executable $PATH
 		```bash
@@ -49,6 +49,6 @@ CLONED using SOURCETREE from: https://bitbucket.org/young_computation/rose/src/m
 	* samtools
 	* R version > 3.4
 	* bedtools > 2
-	* python3
+	* python2
 
 =================================================================
