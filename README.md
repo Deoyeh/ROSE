@@ -24,7 +24,7 @@ CLONED using SOURCETREE from: https://bitbucket.org/young_computation/rose/src/m
 
 	* ROSE is executable independent of software directory location.
 	* ROSE has a wrapper script "ROSE-local.sh" to successfully execute all steps of the package, else add ROSE to user executable $PATH
-	* ROSE is compatible with python3
+	* ROSE is compatible with python2
 
 1. DIRECTORY structure
 	```
